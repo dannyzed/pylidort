@@ -1,0 +1,61 @@
+name: 'test'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [ opened, reopened, synchronize, labeled ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  test-conda:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target_plat: x86_64
+          - os: windows-latest
+            target_plat: x86_64
+          - os: macos-11
+            target_plat: x86_64
+          - os: macos-11
+            target_plat: arm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Setup Conda build environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ci/conda-envs/mamba-build.yml
+
+      - name: Build Conda package
+        shell: bash -el {0}
+        if: (matrix.target_plat == 'x86_64')
+        run: |
+          conda mambabuild conda.recipe --output-folder pkgs/
+
+      - name: Build Conda package (cross mac arm)
+        shell: bash -el {0}
+        if: (matrix.target_plat == 'arm') && (matrix.os == 'macos-11')
+        run: |
+          conda mambabuild conda.recipe -m conda.recipe/osx_arm64_.yaml --output-folder pkgs/ --no-test
+
+      - name: Save conda package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pylidort-conda-${{ matrix.os }}-${{ matrix.target_plat }}
+          path: pkgs

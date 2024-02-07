@@ -1,0 +1,50 @@
+{% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') %}
+{% set describe_number = environ.get('GIT_DESCRIBE_NUMBER', '0') %}
+{% set describe_hash = environ.get('GIT_DESCRIBE_HASH', 'untagged') %}
+{% set py_version = environ['CONDA_PY'] %}
+
+
+package:
+  name: pylidort
+  version: {{ version }}
+
+source:
+  git_url: ../
+
+build:
+  binary_relocation: true
+  number: {{ describe_number }}
+  string: py_{{ py_version }}_{{ describe_hash }}_{{ describe_number }}
+  script:
+    - {{ PYTHON }} -m pip install . -vvv
+
+requirements:
+  build:
+    - cmake >=3.5
+    - python                                 # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+  host:
+    - python {{ python }}
+    - numpy
+  run:
+    - python {{ python }}
+    - numpy
+
+test:
+  requires:
+    - pytest
+  imports:
+    - pylidort
+  source_files:
+    - tests
+  commands:
+    - python -m pytest
+
+about:
+  home: https://github.com/dannyzed/pylidort
+  license_file:
+    - license.md
+  summary: "A python interface to the (V)LIDORT family of radiative transfer models"
+  doc_url: https://pylidort.readthedocs.io/
