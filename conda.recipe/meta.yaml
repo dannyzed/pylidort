@@ -19,7 +19,7 @@ build:
   string: py_{{ py_version }}_{{ describe_hash }}_{{ describe_number }}
   script:
     - {{ PYTHON }} -m pip install . -vvv # [not win]
-    - CC=clang-cl FC=flang-new {{ PYTHON }} -m pip install . -vvv # [win]
+    - {{ PYTHON }} -m pip install . -vvv # [win]
   skip: true  # [py<310]
 
 requirements:
