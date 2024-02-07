@@ -1,0 +1,5 @@
+build/
+*.log
+LIDORT_WRITE_STD*
+.vscode/
+**__pycache__/
