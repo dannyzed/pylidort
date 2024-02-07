@@ -17,6 +17,7 @@ build:
   string: py_{{ py_version }}_{{ describe_hash }}_{{ describe_number }}
   script:
     - {{ PYTHON }} -m pip install . -vvv
+  skip: true  # [py<310]
 
 requirements:
   build:
@@ -26,10 +27,10 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
   host:
-    - python {{ python }}
+    - python
     - numpy
   run:
-    - python {{ python }}
+    - python
     - numpy
 
 test:
