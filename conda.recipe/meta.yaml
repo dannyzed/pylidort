@@ -29,6 +29,8 @@ requirements:
   host:
     - python
     - numpy
+    - scikit-build-core
+    - setuptools-scm
   run:
     - python
     - numpy
