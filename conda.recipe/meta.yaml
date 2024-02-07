@@ -26,14 +26,17 @@ requirements:
     - cmake >=3.5
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - numpy                                  # [build_platform != target_platform]
+    - meson-python                           # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('fortran') }} # [unix]
+    - clang # [win]
     - flang # [win]
     - lld # [win]
   host:
     - python
     - numpy
-    - scikit-build-core
+    - meson-python
     - setuptools-scm
     - compiler-rt # [win]
   run:

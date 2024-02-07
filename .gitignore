@@ -3,3 +3,5 @@ build/
 LIDORT_WRITE_STD*
 .vscode/
 **__pycache__/
+.ruff_cache
+.pytest_cache

@@ -1,6 +1,6 @@
 [build-system]
-requires = ["scikit-build-core>=0.3.3", "setuptools-scm>=8.0", "numpy"]
-build-backend = "scikit_build_core.build"
+build-backend = "mesonpy"
+requires = ["meson-python", "setuptools-scm>=8.0", "numpy"]
 
 
 [project]
