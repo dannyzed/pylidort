@@ -8,6 +8,8 @@ def test_lidort():
     fixed_lin = pylidort.FixedLinInputs()
     modified_lin = pylidort.ModifiedLinInputs()
 
+    output = pylidort.Outputs()
+
     fixed.Cont.TS_LIDORT_ACCURACY = 1e99
 
     modified_lin.MCont.TS_DO_LINEARIZATION = False
@@ -33,5 +35,6 @@ def test_lidort():
         modified=modified,
         fixed_lin=fixed_lin,
         modified_lin=modified_lin,
-        num_repeat=100,
+        output=output,
+        num_repeat=1,
     )

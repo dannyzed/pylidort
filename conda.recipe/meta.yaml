@@ -29,18 +29,16 @@ requirements:
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - numpy                                  # [build_platform != target_platform]
     - scikit-build-core                      # [build_platform != target_platform]
-    - {{ compiler('c') }}
+    - {{ compiler('c') }} # [unix]
     - {{ compiler('fortran') }} # [unix]
-    - clang # [win]
-    - flang # [win]
-    - lld # [win]
+    - {{ compiler('m2w64_c') }}  # [win]
+    - {{ compiler('m2w64_fortran') }}  # [win]
   host:
     - cmake
     - python
     - numpy
     - scikit-build-core
     - setuptools-scm
-    - compiler-rt # [win]
   run:
     - python
     - numpy
@@ -58,6 +56,6 @@ test:
 about:
   home: https://github.com/dannyzed/pylidort
   license_file:
-    - ../license.md
+    - ../license.txt
   summary: "A python interface to the (V)LIDORT family of radiative transfer models"
   doc_url: https://pylidort.readthedocs.io/

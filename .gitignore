@@ -5,3 +5,4 @@ LIDORT_WRITE_STD*
 **__pycache__/
 .ruff_cache
 .pytest_cache
+src/pylidort/_version.py

@@ -30,7 +30,11 @@ subroutine internal_lidort(TS_DO_FULLRAD_MODE, TS_DO_THERMAL_EMISSION, TS_DO_SUR
                   TS_L_PHASMOMS_TOTAL_INPUT, TS_L_PHASFUNC_INPUT_UP, TS_L_PHASFUNC_INPUT_DN, &
                   TS_DO_COLUMN_LINEARIZATION, TS_DO_PROFILE_LINEARIZATION, TS_DO_ATMOS_LINEARIZATION, &
                   TS_DO_SURFACE_LINEARIZATION, TS_DO_LINEARIZATION, TS_DO_SIMULATION_ONLY, TS_DO_ATMOS_LBBF, &
-                  TS_DO_SURFACE_LBBF, TS_DO_SLEAVE_WFS, NUM_REPEAT)
+                  TS_DO_SURFACE_LBBF, TS_DO_SLEAVE_WFS, NUM_REPEAT, &
+                  TS_INTENSITY, TS_MEANI_DIFFUSE, TS_FLUX_DIFFUSE, TS_DNMEANI_DIRECT, TS_DNFLUX_DIRECT, &
+                  TS_ALBMED_USER, TS_TRNMED_USER, TS_ALBMED_FLUXES, TS_TRNMED_FLUXES, TS_PLANETARY_TRANSTERM, &
+                  TS_PLANETARY_SBTERM, TS_PATHGEOMS, TS_LOSTRANS, TS_LAYER_MSSTS, TS_SURF_MSSTS, &
+                  TS_CONTRIBS)
    USE LIDORT_pars_m
    USE LIDORT_IO_DEFS_m
    USE LIDORT_LIN_IO_DEFS_m
@@ -44,12 +48,13 @@ subroutine internal_lidort(TS_DO_FULLRAD_MODE, TS_DO_THERMAL_EMISSION, TS_DO_SUR
    INTEGER, parameter :: WRAP_MAXLAYERS = 200
    INTEGER, parameter :: WRAP_MAXMOMENTS_INPUT = 200
    INTEGER, parameter :: WRAP_MAX_GEOMETRIES = 8
-   INTEGER, parameter :: WRAP_MAX_BEAMS = 8
+   INTEGER, parameter :: WRAP_MAXBEAMS = 8
    INTEGER, parameter :: WRAP_MAX_USER_RELAZMS = 1
    INTEGER, parameter :: WRAP_MAX_USER_STREAMS = 1
    INTEGER, parameter :: WRAP_MAX_USER_LEVELS = 2
    INTEGER, parameter :: WRAP_MAX_USER_OBSGEOMS = 8
    INTEGER, parameter :: WRAP_MAX_ATMOSWFS = 3
+   INTEGER, parameter :: WRAP_MAX_DIRECTIONS = 2
 
    LOGICAL, parameter :: do_debug_input = .false.
 
@@ -182,7 +187,7 @@ subroutine internal_lidort(TS_DO_FULLRAD_MODE, TS_DO_THERMAL_EMISSION, TS_DO_SUR
 ! Input Modified Sunrays
 
    INTEGER    :: TS_NBEAMS
-   REAL(8), dimension (WRAP_MAX_BEAMS) :: TS_BEAM_SZAS
+   REAL(8), dimension (WRAP_MAXBEAMS) :: TS_BEAM_SZAS
 
 ! Input Modified User Values
 
@@ -240,6 +245,48 @@ subroutine internal_lidort(TS_DO_FULLRAD_MODE, TS_DO_THERMAL_EMISSION, TS_DO_SUR
 
    ! Number of times to repeat the caluclation, used to test performance overhead
    INTEGER :: NUM_REPEAT
+
+! Output Main
+
+   REAL(8), dimension ( WRAP_MAX_USER_LEVELS, WRAP_MAX_GEOMETRIES, WRAP_MAX_DIRECTIONS ), intent(out) :: TS_INTENSITY
+   REAL(8), dimension ( WRAP_MAX_USER_LEVELS, WRAP_MAXBEAMS, WRAP_MAX_DIRECTIONS ), intent(out) :: TS_MEANI_DIFFUSE
+   REAL(8), dimension ( WRAP_MAX_USER_LEVELS, WRAP_MAXBEAMS, WRAP_MAX_DIRECTIONS ), intent(out) :: TS_FLUX_DIFFUSE
+   REAL(8), dimension ( WRAP_MAX_USER_LEVELS, WRAP_MAXBEAMS ), intent(out) :: TS_DNMEANI_DIRECT
+   REAL(8), dimension ( WRAP_MAX_USER_LEVELS, WRAP_MAXBEAMS ), intent(out) :: TS_DNFLUX_DIRECT
+   REAL(8), dimension ( WRAP_MAX_USER_STREAMS ), intent(out) :: TS_ALBMED_USER, TS_TRNMED_USER
+   REAL(8), intent(out)                                 :: TS_ALBMED_FLUXES(2), TS_TRNMED_FLUXES(2)
+   REAL(8), dimension (  WRAP_MAX_GEOMETRIES ), intent(out) :: TS_PLANETARY_TRANSTERM
+   REAL(8), intent(out)                                :: TS_PLANETARY_SBTERM
+   REAL(8), DIMENSION ( 2, 0:WRAP_MAXLAYERS ), intent(out)      :: TS_PATHGEOMS
+   REAL(8), DIMENSION ( WRAP_MAXBEAMS, WRAP_MAXLAYERS ), intent(out) :: TS_LOSTRANS
+   REAL(8), DIMENSION ( WRAP_MAXBEAMS, WRAP_MAXLAYERS ), intent(out) :: TS_LAYER_MSSTS
+   REAL(8), DIMENSION ( WRAP_MAXBEAMS ), intent(out)            :: TS_SURF_MSSTS
+   REAL(8), DIMENSION ( WRAP_MAX_GEOMETRIES, WRAP_MAXLAYERS ), intent(out) :: TS_CONTRIBS
+
+!  bookkeeping
+!  -----------
+
+!  Fourier numbers used (bookkeeping)
+
+      INTEGER, dimension ( MAXBEAMS )  :: TS_FOURIER_SAVED
+
+!  Number of geometries (bookkeeping output)
+
+      INTEGER                          :: TS_N_GEOMETRIES
+
+!  Solar Beam Transmittance to BOA
+!  rob fix 11/27/2014, for diagnostic use only
+
+      REAL(fpk), dimension ( MAXBEAMS ) :: TS_SOLARBEAM_BOATRANS
+
+!  4/22/19. for Version 3.8.1. Spherical Albedo and Transmittances
+!  ---------------------------------------------------------------
+
+!   Required for the planetary problem
+
+      real(fpk) :: TS_SPHERALB
+      real(fpk) :: TS_TRANS1_USER ( MAX_USER_STREAMS)
+      real(fpk) :: TS_TRANS1_BEAM ( MAXBEAMS)
 
 ! Copy to LIDORT Structures
 
@@ -418,6 +465,25 @@ do v = 1, NUM_REPEAT
         LIDORT_LinSup,   & ! INPUTS/OUTPUTS
         LIDORT_LinOut )    ! OUTPUTS
 enddo
+
+! Outputs Main
+TS_INTENSITY = LIDORT_Out%Main%TS_INTENSITY
+TS_MEANI_DIFFUSE = LIDORT_Out%Main%TS_MEANI_DIFFUSE
+TS_FLUX_DIFFUSE = LIDORT_Out%Main%TS_FLUX_DIFFUSE
+TS_DNMEANI_DIRECT = LIDORT_Out%Main%TS_DNMEANI_DIRECT
+TS_DNFLUX_DIRECT = LIDORT_Out%Main%TS_DNFLUX_DIRECT
+TS_ALBMED_USER = LIDORT_Out%Main%TS_ALBMED_USER
+TS_TRNMED_USER = LIDORT_Out%Main%TS_TRNMED_USER
+TS_ALBMED_FLUXES = LIDORT_Out%Main%TS_ALBMED_FLUXES
+TS_TRNMED_FLUXES = LIDORT_Out%Main%TS_TRNMED_FLUXES
+TS_PLANETARY_TRANSTERM = LIDORT_Out%Main%TS_PLANETARY_TRANSTERM
+TS_PLANETARY_SBTERM = LIDORT_Out%Main%TS_PLANETARY_SBTERM
+TS_PATHGEOMS = LIDORT_Out%Main%TS_PATHGEOMS
+TS_LOSTRANS = LIDORT_Out%Main%TS_LOSTRANS
+TS_LAYER_MSSTS = LIDORT_Out%Main%TS_LAYER_MSSTS
+TS_SURF_MSSTS = LIDORT_Out%Main%TS_SURF_MSSTS
+TS_CONTRIBS = LIDORT_Out%Main%TS_CONTRIBS
+
 
 !   CALL LIDORT_WRITE_STATUS ( &
 !        '3p8p3_LIDORT_Execution.log', LIDORT_ERRUNIT, OPENFILEFLAG, LIDORT_Out%Status )
