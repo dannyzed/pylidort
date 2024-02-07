@@ -16,10 +16,10 @@ build:
   number: {{ describe_number }}
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+    - CMAKE_ARGS="-DCMAKE_C_COMPILER:PATH=%MINGWBIN%/gcc.exe;-DCMAKE_Fortran_COMPILER:PATH=%MINGWBIN%/gfortran.exe" # [win]
   string: py_{{ py_version }}_{{ describe_hash }}_{{ describe_number }}
   script:
-    - {{ PYTHON }} -m pip install . -vvv # [not win]
-    - {{ PYTHON }} -m pip install . -vvv # [win]
+    - {{ PYTHON }} -m pip install . -vvv
   skip: true  # [py<310]
 
 requirements:
