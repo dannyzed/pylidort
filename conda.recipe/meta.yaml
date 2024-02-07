@@ -18,25 +18,27 @@ build:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   string: py_{{ py_version }}_{{ describe_hash }}_{{ describe_number }}
   script:
-    - {{ PYTHON }} -m pip install . -vvv
+    - {{ PYTHON }} -m pip install . -vvv # [not win]
+    - CC=clang-cl FC=flang-new {{ PYTHON }} -m pip install . -vvv # [win]
   skip: true  # [py<310]
 
 requirements:
   build:
-    - cmake >=3.5
+    - cmake >=3.5                            # [build_platform != target_platform]
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - numpy                                  # [build_platform != target_platform]
-    - meson-python                           # [build_platform != target_platform]
+    - scikit-build-core                      # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('fortran') }} # [unix]
     - clang # [win]
     - flang # [win]
     - lld # [win]
   host:
+    - cmake
     - python
     - numpy
-    - meson-python
+    - scikit-build-core
     - setuptools-scm
     - compiler-rt # [win]
   run:

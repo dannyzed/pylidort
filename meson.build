@@ -119,7 +119,7 @@ incdir_f2py = run_command(py,
 
 lidort_wrapper_source = custom_target('_coremodule.c',
   input : ['lib/lidort_f2py/lidort.f90'],  # .f so no F90 wrappers
-  output : ['_coremodule.c', '_core-f2pywrappers.f'],
+  output : ['_coremodule.c'],
   command : [py, '-m', 'numpy.f2py', '@INPUT@', '-m', '_core', '--lower']
 )
 
