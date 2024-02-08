@@ -3,7 +3,7 @@ from dataclasses import asdict
 from .._core import internal_lidort as _lidort
 from .input.fixed import FixedInputs, FixedLinInputs
 from .input.modified import ModifiedInputs, ModifiedLinInputs
-from .output import Outputs
+from .output import LinOutputs, Outputs
 
 
 def run_lidort(
@@ -12,6 +12,7 @@ def run_lidort(
     fixed_lin: FixedLinInputs,
     modified_lin: ModifiedLinInputs,
     output: Outputs,
+    lin_ouput: LinOutputs,
     num_repeat: int = 1,
 ):
     inputs = {
@@ -31,26 +32,12 @@ def run_lidort(
         **asdict(fixed_lin.Cont),
         **asdict(fixed_lin.Optical),
         **asdict(modified_lin.MCont),
+        **asdict(output.Main),
+        **asdict(lin_ouput.Atmos),
+        **asdict(lin_ouput.Surf),
         "num_repeat": num_repeat,
     }
 
     inputs = {k.lower(): v for k, v in inputs.items()}
 
-    (
-        output.Main.TS_INTENSITY,
-        output.Main.TS_MEANI_DIFFUSE,
-        output.Main.TS_FLUX_DIFFUSE,
-        output.Main.TS_DNMEANI_DIRECT,
-        output.Main.TS_DNFLUX_DIRECT,
-        output.Main.TS_ALBMED_USER,
-        output.Main.TS_TRNMED_USER,
-        output.Main.TS_ALBMED_FLUXES,
-        output.Main.TS_TRNMED_FLUXES,
-        output.Main.TS_PLANETARY_TRANSTERM,
-        output.Main.TS_PLANETARY_SBTERM,
-        output.Main.TS_PATHGEOMS,
-        output.Main.TS_LOSTRANS,
-        output.Main.TS_LAYER_MSSTS,
-        output.Main.TS_SURF_MSSTS,
-        output.Main.TS_CONTRIBS,
-    ) = _lidort(**inputs)
+    _lidort(**inputs)

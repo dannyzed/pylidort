@@ -29,9 +29,8 @@ requirements:
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - numpy                                  # [build_platform != target_platform]
     - scikit-build-core                      # [build_platform != target_platform]
-    - {{ compiler('c') }} # [unix]
-    - {{ compiler('fortran') }} # [unix]
-    - {{ compiler('m2w64_c') }}  # [win]
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
     - {{ compiler('m2w64_fortran') }}  # [win]
   host:
     - cmake

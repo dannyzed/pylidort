@@ -7,6 +7,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 enable_language(Fortran)
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none")
 
 set(LIDORT_DEF_SOURCES
     lib/lidort_def/lidort_inputs_def.f90

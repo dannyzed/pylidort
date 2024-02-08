@@ -9,6 +9,7 @@ def test_lidort():
     modified_lin = pylidort.ModifiedLinInputs()
 
     output = pylidort.Outputs()
+    lin_output = pylidort.LinOutputs()
 
     fixed.Cont.TS_LIDORT_ACCURACY = 1e99
 
@@ -23,7 +24,7 @@ def test_lidort():
     modified.MOptical.TS_OMEGA_TOTAL_INPUT[:] = 0.9
 
     fixed.Cont.TS_NLAYERS = 200
-    fixed.Cont.TS_NSTREAMS = 20
+    fixed.Cont.TS_NSTREAMS = 4
 
     modified.MUserVal.TS_USER_OBSGEOMS_INPUT[0, :] = (30.0, 20.0, 0.0)
 
@@ -36,5 +37,6 @@ def test_lidort():
         fixed_lin=fixed_lin,
         modified_lin=modified_lin,
         output=output,
+        lin_ouput=lin_output,
         num_repeat=1,
     )

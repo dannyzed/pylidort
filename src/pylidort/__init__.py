@@ -1,6 +1,6 @@
 from .lidort import run_lidort
 from .lidort.input import FixedInputs, FixedLinInputs, ModifiedInputs, ModifiedLinInputs
-from .lidort.output import Outputs
+from .lidort.output import LinOutputs, Outputs
 
 __all__ = (
     "run_lidort",
@@ -9,4 +9,5 @@ __all__ = (
     "ModifiedInputs",
     "ModifiedLinInputs",
     "Outputs",
+    "LinOutputs",
 )

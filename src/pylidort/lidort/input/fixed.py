@@ -133,7 +133,7 @@ class FixedChapman:
     )  # Multilayer Temperature inputs in [K], size (MAXLAYERS+1), required for refractive geometry
 
     TS_FINEGRID: np.array = field(
-        default_factory=lambda: np.zeros(pars.MAXLAYERS)
+        default_factory=lambda: np.zeros(pars.MAXLAYERS, dtype=np.int32)
     )  # Number of fine-layer gradations, size (MAXLAYERS), required for refractive geometry
 
     TS_RFINDEX_PARAMETER: float = 0.000288  # Refractive index parameter
@@ -223,7 +223,7 @@ class FixedLinControl:
         default_factory=lambda: np.zeros(pars.MAXLAYERS, dtype=bool)
     )  # Layer vary flag
     TS_LAYER_VARY_NUMBER: np.array = field(
-        default_factory=lambda: np.zeros(pars.MAXLAYERS, dtype=int)
+        default_factory=lambda: np.zeros(pars.MAXLAYERS, dtype=np.int32)
     )  # Layer vary number
 
     TS_N_TOTALCOLUMN_WFS: int = 0  # Total number of column weighting functions
@@ -245,25 +245,25 @@ class FixedLinOptical:
     """
 
     TS_L_DELTAU_VERT_INPUT: np.array = field(
-        default_factory=lambda: np.zeros((pars.MAX_ATMOSWFS, pars.MAXLAYERS))
+        default_factory=lambda: np.zeros((pars.MAX_ATMOSWFS, pars.MAXLAYERS), order="F")
     )
     TS_L_OMEGA_TOTAL_INPUT: np.array = field(
-        default_factory=lambda: np.zeros((pars.MAX_ATMOSWFS, pars.MAXLAYERS))
+        default_factory=lambda: np.zeros((pars.MAX_ATMOSWFS, pars.MAXLAYERS), order="F")
     )
     TS_L_PHASMOMS_TOTAL_INPUT: np.array = field(
         default_factory=lambda: np.zeros(
-            (pars.MAX_ATMOSWFS, pars.MAXMOMENTS_INPUT + 1, pars.MAXLAYERS)
+            (pars.MAX_ATMOSWFS, pars.MAXMOMENTS_INPUT + 1, pars.MAXLAYERS), order="F"
         )
     )
 
     TS_L_PHASFUNC_INPUT_UP: np.array = field(
         default_factory=lambda: np.zeros(
-            (pars.MAX_ATMOSWFS, pars.MAXLAYERS, pars.MAX_GEOMETRIES)
+            (pars.MAX_ATMOSWFS, pars.MAXLAYERS, pars.MAX_GEOMETRIES), order="F"
         )
     )
     TS_L_PHASFUNC_INPUT_DN: np.array = field(
         default_factory=lambda: np.zeros(
-            (pars.MAX_ATMOSWFS, pars.MAXLAYERS, pars.MAX_GEOMETRIES)
+            (pars.MAX_ATMOSWFS, pars.MAXLAYERS, pars.MAX_GEOMETRIES), order="F"
         )
     )
 
