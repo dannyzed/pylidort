@@ -6,3 +6,4 @@ LIDORT_WRITE_STD*
 .ruff_cache
 .pytest_cache
 src/pylidort/_version.py
+.DS_Store

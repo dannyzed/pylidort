@@ -1,5 +1,3 @@
-from dataclasses import asdict
-
 from .._core import internal_lidort as _lidort
 from .input.fixed import FixedInputs, FixedLinInputs
 from .input.modified import ModifiedInputs, ModifiedLinInputs
@@ -16,28 +14,26 @@ def run_lidort(
     num_repeat: int = 1,
 ):
     inputs = {
-        **asdict(fixed.Bool),
-        **asdict(fixed.Cont),
-        **asdict(fixed.Sunrays),
-        **asdict(fixed.Chapman),
-        **asdict(fixed.Optical),
-        **asdict(fixed.Write),
-        **asdict(fixed.UserVal),
-        **asdict(modified.MBool),
-        **asdict(modified.MChapman),
-        **asdict(modified.MCont),
-        **asdict(modified.MSunrays),
-        **asdict(modified.MUserVal),
-        **asdict(modified.MOptical),
-        **asdict(fixed_lin.Cont),
-        **asdict(fixed_lin.Optical),
-        **asdict(modified_lin.MCont),
-        **asdict(output.Main),
-        **asdict(lin_ouput.Atmos),
-        **asdict(lin_ouput.Surf),
+        **fixed.Bool.__dict__,
+        **fixed.Cont.__dict__,
+        **fixed.Sunrays.__dict__,
+        **fixed.Chapman.__dict__,
+        **fixed.Optical.__dict__,
+        **fixed.Write.__dict__,
+        **fixed.UserVal.__dict__,
+        **modified.MBool.__dict__,
+        **modified.MChapman.__dict__,
+        **modified.MCont.__dict__,
+        **modified.MSunrays.__dict__,
+        **modified.MUserVal.__dict__,
+        **modified.MOptical.__dict__,
+        **fixed_lin.Cont.__dict__,
+        **fixed_lin.Optical.__dict__,
+        **modified_lin.MCont.__dict__,
+        **output.Main.__dict__,
+        **lin_ouput.Atmos.__dict__,
+        **lin_ouput.Surf.__dict__,
         "num_repeat": num_repeat,
     }
 
-    inputs = {k.lower(): v for k, v in inputs.items()}
-
-    _lidort(**inputs)
+    _lidort(**{k.lower(): v for k, v in inputs.items()})

@@ -23,8 +23,6 @@ jobs:
         include:
           - os: ubuntu-latest
             target_plat: x86_64
-          - os: windows-latest
-            target_plat: x86_64
           - os: macos-11
             target_plat: x86_64
           - os: macos-11

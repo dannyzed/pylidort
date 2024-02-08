@@ -6,6 +6,7 @@ dependencies:
   - numpy
   - matplotlib
   - sphinx
+  - jupyter
   - pip
   - scikit-build-core
   - cmake
