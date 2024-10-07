@@ -36,7 +36,7 @@ jobs:
           submodules: true
 
       - name: Setup Conda build environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: ci/conda-envs/mamba-build.yml
 
